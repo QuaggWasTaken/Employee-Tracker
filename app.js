@@ -18,13 +18,13 @@ inquirer
 
         switch (answers.main.substr(0, 4)) {
             case 'view':
-                view(answers.main.substring(9, answers.main.length))
+                view(answers.main.substring(9))
                 break;
             case 'add ':
-                console.log("add ")
+                add(answers.main.substring(6))
                 break;
             case 'upda':
-                console.log("upda")
+                PaymentRequestUpdateEvent('employees')
                 break;
             default:
                 break;
@@ -65,4 +65,61 @@ function view(table) {
         }).catch(err => {
             console.log(err); // any of connection time or query time errors from above
         });
+}
+
+function add(table) {
+    query = `select * from ${table}`;
+    table += 's';
+    switch (table) {
+        case 'departments':
+            addDept();
+            break;
+        case 'roles':
+            addRole();
+            break;
+        case 'employees':
+            addEmployee();
+            break;
+        default:
+            break;
+    }
+}
+
+function addDept() {
+    var question = {
+        type: 'input',
+        name: 'main',
+        message: 'What would the name be?',
+        filter: function (val) {
+            return val.toLowerCase();
+        },
+    }
+    var name;
+    inquirer
+        .prompt(question).then(answers => {
+            //console.log(answers.main)
+            name = answers.main;
+            return mysql.createConnection({
+                host: 'localhost',
+                user: 'root',
+                database: 'employee_tracking',
+                password: 'password'
+            })
+        })
+        .then(res => {
+            //console.log(name)
+            if (name) {
+                res.query(`INSERT INTO departments (\`name\`) VALUES ( ? );`, [name]);
+            }
+        }).catch(err => {
+            console.log(err); // any of connection time or query time errors from above
+        });
+}
+
+function addRole() {
+
+}
+
+function addEmployee() {
+
 }
